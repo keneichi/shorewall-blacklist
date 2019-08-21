@@ -144,19 +144,19 @@ logging.info("Injection des regles ipset dans la base")
 if os.path.isfile(ipsetconf):
     with open(del_list) as dellist:
         for line in dellist:
-            os.system(delipset + (line))
+            os.system(f"{delipset} {line}")
             logging.info(
                 f"L'adrese IP suivante a été supprimée de la blacklist existante : {line.strip()}")
 
     with open(add_list) as addlist:
         for line in addlist:
-            os.system(addipset + (line))
+            os.system(f"{addipset} {line}")
             logging.info(
                 f"L'adrese IP suivante a été ajoutée à la blacklist existante : {line.strip()}")
 else:
     with open(blacklist) as blacklist:
         for line in blacklist:
-            os.system(addipset + (line))
+            os.system(f"{addipset} {line}")
             logging.info(
                 f"L'adrese IP suivante a été correctement ajoutée à la blacklist : {line.strip()}")
 
