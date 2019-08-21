@@ -7,7 +7,7 @@ import shutil
 import wget
 import ipaddress
 import logging
-import time
+from shutil import copyfile
 
 
 # paths
