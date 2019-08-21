@@ -111,7 +111,7 @@ urlretrieve(url_ipsum, ipsum_file)
 # creation du fichier blacklist depuis ipsum.txt
 # command lines et path
 logging.info("Création du fichier blacklist.")
-ipsum = ('/opt/shorewall-blacklist/ipsum.txt')
+ipsum = '/opt/shorewall-blacklist/ipsum.txt'
 ipfile_blacklist = open('/opt/shorewall-blacklist/blacklistip', 'w')
 new_list = []
 
