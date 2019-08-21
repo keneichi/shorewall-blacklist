@@ -10,8 +10,9 @@ import logging
 from shutil import copyfile
 
 
-##logfile
-logging.basicConfig(filename='/var/log/shorewall-blacklist.log', filemode='w+', format='%(asctime)s - %(levelname)s - %(message)s',level=logging.DEBUG)
+# logfile
+logging.basicConfig(filename='/var/log/shorewall-blacklist.log', filemode='w+',
+                    format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 # command lines
 shorewall_check = 'shorewall check'
@@ -29,8 +30,8 @@ else:
         "La configuration initiale de shorewall n'est pas valide. Le processus est arrêté. Veuillez vérifier votre configuration shorewall avant de poursuivre.")
     sys.exit()
 
-##Test de la présence de la base ipset
-#command lines
+# Test de la présence de la base ipset
+# command lines
 create_blacklist_base = 'ipset create blacklist hash:ip hashsize 16777216 maxelem 16777216'
 
 # commands
@@ -63,10 +64,10 @@ else:
 # recupération de la liste des ip via projet stamparm/ipsum
 # paths
 url_ipsum = 'https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt'
-ipsum_path =  '/opt/shorewall-blacklist/'
-#commands
+ipsum_path = '/opt/shorewall-blacklist/'
+# commands
 logging.info("""Recupération des adresses IP BlackListée sur projet ipsum.""")
-urlretrieve(url_ipsum,ipsum_path)
+urlretrieve(url_ipsum, ipsum_path)
 
 # creation du fichier blacklist depuis ipsum.txt
 # command lines et path
@@ -130,8 +131,8 @@ f_del.writelines('\n'.join(del_list))
 f_del.close()
 
 
-## injection data dans base
-#command lines et path
+# injection data dans base
+# command lines et path
 addipset = 'ipset add blacklist '
 delipset = 'ipset del blacklist '
 del_list = '/opt/shorewall-blacklist/del_list.txt'
@@ -139,17 +140,17 @@ add_list = '/opt/shorewall-blacklist/add_list.txt'
 blacklist = '/opt/shorewall-blacklist/blacklistip'
 ipsum_file = '/opt/shorewall-blacklist/ipsum.txt'
 
-#commands
+# commands
 logging.info("""Injection des regles ipset dans la base""")
 if os.path.isfile(ipsetconf):
-    with open(del_list) as dellist :
-        for line in dellist :
+    with open(del_list) as dellist:
+        for line in dellist:
             os.system(delipset + (line))
             logging.info(
                 "L'adrese IP suivante a été supprimée de la blacklist existante : " + (line.strip('\n')))
 
-    with open(add_list) as addlist :
-        for line in addlist :
+    with open(add_list) as addlist:
+        for line in addlist:
             os.system(addipset + (line))
             logging.info(
                 "L'adrese IP suivante a été ajoutée à la blacklist existante : " + (line.strip('\n')))
@@ -157,15 +158,17 @@ else:
     with open(blacklist) as blacklist:
         for line in blacklist:
             os.system(addipset + (line))
-            logging.info("""L'adrese IP suivante a été correctement ajoutée à la blacklist : """ + (line.strip('\n')))
-    
-#nettoyage après opérations
-logging.info("""Suppression des fichiers de travail""" )
+            logging.info(
+                """L'adrese IP suivante a été correctement ajoutée à la blacklist : """ + (line.strip('\n')))
+
+# nettoyage après opérations
+logging.info("""Suppression des fichiers de travail""")
 list_files = [blacklist, ipsum_file, add_list, del_list]
 
-for files in list_files :
-        os.remove(files)
-        logging.info("""Le fichier de travail '""" + (files) + """' a été supprimé""" )
+for files in list_files:
+    os.remove(files)
+    logging.info("""Le fichier de travail '""" +
+                 (files) + """' a été supprimé""")
 
 
 # sauvegarde des regles actuelles ipset
@@ -176,15 +179,16 @@ ipset_save = 'ipset save > /etc/ipset.conf'
 logging.info("Sauvegarde des regles ipset blacklist.")
 os.system(ipset_save)
 
-##redemarrage de shorewall
-#path et command lines
+# redemarrage de shorewall
+# path et command lines
 blrules_file = '/etc/shorewall/blrules'
-#commands
+# commands
 logging.info("""copie du fichier blrules""")
 if os.path.isfile(blrules_file):
     pass
 else:
-    os.system('cp /opt/shorewall-blacklist/configfiles/blrules /etc/shorewall/blrules')
+    os.system(
+        'cp /opt/shorewall-blacklist/configfiles/blrules /etc/shorewall/blrules')
 
 
 logging.info("Vérification de la configuration shorewall.")
