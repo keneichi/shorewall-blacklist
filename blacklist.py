@@ -72,8 +72,8 @@ urlretrieve(url_ipsum, ipsum_path)
 # creation du fichier blacklist depuis ipsum.txt
 # command lines et path
 logging.info("Création du fichier blacklist.")
-ipsum = '/opt/shorewall-blacklist/ipsum.txt'
-ipfile_blacklist = open('/opt/shorewall-blacklist/blacklistip', 'w')
+ipsum = f'{ipsum_path}/ipsum.txt'
+ipfile_blacklist = open(f'{ipsum_path}/blacklistip', 'w')
 new_list = []
 
 # commands
@@ -95,9 +95,9 @@ ipfile_blacklist.close()
 
 # préparation pour diff
 # commands and path
-bl_tmp = '/opt/shorewall-blacklist/bl_tmp'
-rm_bltmp = 'rm -f /opt/shorewall-blacklist/bl_tmp'
-create_bltmp = 'ipset list blacklist > /opt/shorewall-blacklist/bl_tmp'
+bl_tmp = f'{ipsum_path}/bl_tmp'
+rm_bltmp = f'rm -f {ipsum_path}/bl_tmp'
+create_bltmp = f'ipset list blacklist > {ipsum_path}/bl_tmp'
 old_list = []
 
 # commands
@@ -120,12 +120,12 @@ del_list = list(set(old_list) - set(new_list))
 add_list = list(set(new_list) - set(old_list))
 
 # création de la liste d'adresse à ajouter
-f_add = open("/opt/shorewall-blacklist/add_list.txt", 'w')
+f_add = open(f'{ipsum_path}/add_list.txt', 'w')
 f_add.writelines('\n'.join(add_list))
 f_add.close()
 
 # création de la liste d'adresse à supprimer
-f_del = open("/opt/shorewall-blacklist/del_list.txt", 'w')
+f_del = open(f'{ipsum_path}/del_list.txt', 'w')
 f_del.writelines('\n'.join(del_list))
 f_del.close()
 
@@ -134,10 +134,10 @@ f_del.close()
 # command lines et path
 addipset = 'ipset add blacklist '
 delipset = 'ipset del blacklist '
-del_list = '/opt/shorewall-blacklist/del_list.txt'
-add_list = '/opt/shorewall-blacklist/add_list.txt'
-blacklist = '/opt/shorewall-blacklist/blacklistip'
-ipsum_file = '/opt/shorewall-blacklist/ipsum.txt'
+del_list = f'{ipsum_path}/del_list.txt'
+add_list = f'{ipsum_path}/add_list.txt'
+blacklist = f'{ipsum_path}/blacklistip'
+ipsum_file = f'{ipsum_path}/ipsum.txt'
 
 # commands
 logging.info("Injection des regles ipset dans la base")
@@ -182,11 +182,9 @@ os.system(ipset_save)
 blrules_file = '/etc/shorewall/blrules'
 # commands
 logging.info("copie du fichier blrules")
-if os.path.isfile(blrules_file):
-    pass
-else:
+if not os.path.isfile(blrules_file):
     os.system(
-        'cp /opt/shorewall-blacklist/configfiles/blrules /etc/shorewall/blrules')
+        f'cp {ipsum_path}/configfiles/blrules /etc/shorewall/blrules')
 
 
 logging.info("Vérification de la configuration shorewall.")
