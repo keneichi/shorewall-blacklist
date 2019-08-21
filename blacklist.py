@@ -16,7 +16,7 @@ ipsum_file = '/opt/shorewall-blacklist/ipsum.txt'
 blrules = '/etc/shorewall/blrules'
 
 ##logfile
-logging.basicConfig(filename='/var/log/shorewall-blacklist.log', filemode='w+', format='%(asctime)s - %(levelname)s - %(message)s',level=logging.DEBUG)
+logging.basicConfig(filename='/var/log/shorewall-blacklist.log', filemode='w', format='%(asctime)s - %(levelname)s - %(message)s',level=logging.DEBUG)
 
 ##command lines 
 shorewall_check = 'shorewall check'
