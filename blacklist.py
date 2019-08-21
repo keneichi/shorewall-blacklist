@@ -66,7 +66,7 @@ else:
 url_ipsum = 'https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt'
 ipsum_path = '/opt/shorewall-blacklist/'
 # commands
-logging.info("""Recupération des adresses IP BlackListée sur projet ipsum.""")
+logging.info("Recupération des adresses IP BlackListée sur projet ipsum.")
 urlretrieve(url_ipsum, ipsum_path)
 
 # creation du fichier blacklist depuis ipsum.txt
@@ -86,7 +86,7 @@ with open(ipsum) as ipsum:
             ipaddress.ip_address(ip[0])
         except ValueError:
             logging.warning(
-                "L'adresse IP " + (ip[0]) + " n'est pas valide et n'a pas été ajouté à la blacklist.")
+                f"L'adresse IP {ip[0]} n'est pas valide et n'a pas été ajouté à la blacklist.")
             continue
         ipfile_blacklist.write(ip[0]+'\n')
         new_list.append(ip[0])
@@ -94,7 +94,7 @@ with open(ipsum) as ipsum:
 ipfile_blacklist.close()
 
 # préparation pour diff
-#commands and path
+# commands and path
 bl_tmp = '/opt/shorewall-blacklist/bl_tmp'
 rm_bltmp = 'rm -f /opt/shorewall-blacklist/bl_tmp'
 create_bltmp = 'ipset list blacklist > /opt/shorewall-blacklist/bl_tmp'
@@ -109,7 +109,6 @@ with open(bl_tmp) as f:
             ipaddress.ip_address(line.strip())
         except ValueError:
             continue
-#        iplist.write(line)
         old_list.append(line.strip())
 
 os.system(rm_bltmp)
@@ -141,34 +140,33 @@ blacklist = '/opt/shorewall-blacklist/blacklistip'
 ipsum_file = '/opt/shorewall-blacklist/ipsum.txt'
 
 # commands
-logging.info("""Injection des regles ipset dans la base""")
+logging.info("Injection des regles ipset dans la base")
 if os.path.isfile(ipsetconf):
     with open(del_list) as dellist:
         for line in dellist:
             os.system(delipset + (line))
             logging.info(
-                "L'adrese IP suivante a été supprimée de la blacklist existante : " + (line.strip('\n')))
+                f"L'adrese IP suivante a été supprimée de la blacklist existante : {line.strip()}")
 
     with open(add_list) as addlist:
         for line in addlist:
             os.system(addipset + (line))
             logging.info(
-                "L'adrese IP suivante a été ajoutée à la blacklist existante : " + (line.strip('\n')))
+                f"L'adrese IP suivante a été ajoutée à la blacklist existante : {line.strip()}")
 else:
     with open(blacklist) as blacklist:
         for line in blacklist:
             os.system(addipset + (line))
             logging.info(
-                """L'adrese IP suivante a été correctement ajoutée à la blacklist : """ + (line.strip('\n')))
+                f"L'adrese IP suivante a été correctement ajoutée à la blacklist : {line.strip()}")
 
 # nettoyage après opérations
-logging.info("""Suppression des fichiers de travail""")
+logging.info("Suppression des fichiers de travail")
 list_files = [blacklist, ipsum_file, add_list, del_list]
 
 for files in list_files:
     os.remove(files)
-    logging.info("""Le fichier de travail '""" +
-                 (files) + """' a été supprimé""")
+    logging.info(f'Le fichier de travail "{files}" a été supprimé')
 
 
 # sauvegarde des regles actuelles ipset
@@ -183,7 +181,7 @@ os.system(ipset_save)
 # path et command lines
 blrules_file = '/etc/shorewall/blrules'
 # commands
-logging.info("""copie du fichier blrules""")
+logging.info("copie du fichier blrules")
 if os.path.isfile(blrules_file):
     pass
 else:
