@@ -10,32 +10,12 @@ import logging
 import time
 
 
-##paths
-source_blacklist = '/opt/shorewall-blacklist/blacklistip'
-ipsum_file = '/opt/shorewall-blacklist/ipsum.txt'
-blrules = '/etc/shorewall/blrules'
-
 ##logfile
-logging.basicConfig(filename='/var/log/shorewall-blacklist.log', filemode='w', format='%(asctime)s - %(levelname)s - %(message)s',level=logging.DEBUG)
+logging.basicConfig(filename='/var/log/shorewall-blacklist.log', filemode='w+', format='%(asctime)s - %(levelname)s - %(message)s',level=logging.DEBUG)
 
 ##command lines 
 shorewall_check = 'shorewall check'
 shorewall_restart = 'shorewall restart'
-feed_ipset = 'cat /opt/shorewall-blacklist/blacklistip | bash'
-
-##installation de ipset
-#command lines
-verif_ipset_install ='dpkg -l ipset'
-install_ipset = 'apt-get update && apt-get install -y ipset'
-
-#commands
-result_install = os.system(verif_ipset_install)
-if result_install == 0:
-    logging.info("""ipset est deja installe.""")
-else:
-    logging.info("""ipset n'est pas installé. installation en cours """)
-    os.system(install_ipset)
-
 
 ##Vérification du shorewall avant les opérations
 logging.info("""Vérification de la configuration actuelle de shorewall.""")
@@ -46,23 +26,6 @@ if result == 0:
 else:
     logging.critical("""La configuration initiale de shorewall n'est pas valide. Le processus est arrêté. Veuillez vérifier votre configuration shorewall avant de poursuivre.""")
     sys.exit()
-
-
-##nettoyage avant opérations
-logging.info("""Tentative de suppression des précédents fichiers.""")
-if os.path.isfile(source_blacklist):
-    os.remove(source_blacklist)
-    logging.info("""Le fichier /opt/shorewall-blacklist/blacklistip existant a été supprimé.""")
-else:
-    logging.info("""Aucun fichier à supprimer.""")
-    pass
-
-if os.path.isfile(ipsum_file):
-    os.remove(ipsum_file)
-    logging.info("""Le fichier /opt/shorewall-blacklist/ipsum.txt existant a été correctement supprimé.""")
-else:
-    logging.info("""Aucun fichier à supprimer.""")
-    pass
 
 ##Test de la présence de la base ipset
 #command lines
@@ -96,10 +59,10 @@ else:
 ##recupération de la liste des ip via projet stamparm/ipsum
 #paths
 url_ipsum = 'https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt'
-
+ipsum_path =  '/opt/shorewall-blacklist/'
 #commands
 logging.info("""Recupération des adresses IP BlackListée sur projet ipsum.""")
-wget.download(url_ipsum,ipsum_file)
+wget.download(url_ipsum,ipsum_path)
 
 ##creation du fichier blacklist depuis ipsum.txt
 #command lines et path
@@ -163,23 +126,23 @@ f_del.close()
 
 ## injection data dans base
 #command lines et path
-logging.info("""Injection des regles ipset dans la base""")
 addipset = 'ipset add blacklist '
 delipset = 'ipset del blacklist '
 del_list = '/opt/shorewall-blacklist/del_list.txt'
 add_list = '/opt/shorewall-blacklist/add_list.txt'
 blacklist = '/opt/shorewall-blacklist/blacklistip'
-
+ipsum_file = '/opt/shorewall-blacklist/ipsum.txt'
 
 #commands
+logging.info("""Injection des regles ipset dans la base""")
 if os.path.isfile(ipsetconf):
-    with open(del_list) as del_list :
-        for line in del_list :
+    with open(del_list) as dellist :
+        for line in dellist :
             os.system(delipset + (line))
             logging.info("""L'adrese IP suivante a été supprimée de la blacklist existante : """ + (line.strip('\n')))
 
-    with open(add_list) as add_list :
-        for line in add_list :
+    with open(add_list) as addlist :
+        for line in addlist :
             os.system(addipset + (line))
             logging.info("""L'adrese IP suivante a été ajoutée à la blacklist existante : """ + (line.strip('\n')))
 else :
@@ -188,6 +151,13 @@ else :
             os.system(addipset + (line))
             logging.info("""L'adrese IP suivante a été correctement ajoutée à la blacklist : """ + (line.strip('\n')))
     
+#nettoyage après opérations
+logging.info("""Suppression des fichiers de travail""" )
+list_files = [blacklist, ipsum_file, add_list, del_list]
+
+for files in list_files :
+        os.remove(files)
+        logging.info("""Le fichier de travail '""" + (files) + """' a été supprimé""" )
 
 
 ##sauvegarde des regles actuelles ipset
@@ -200,18 +170,14 @@ os.system(ipset_save)
 
 ##redemarrage de shorewall
 #path et command lines
-blrules_dest = '/etc/shorewall/blrules'
-blrules_src = '/opt/shorewall-blacklist/configfiles/blrules'
-
+blrules_file = '/etc/shorewall/blrules'
 #commands
-logging.info("""Vérification de la présence du fichier blrules""")
-if os.path.isfile(blrules_dest):
-    logging.info("""Le fichier blrules existe déjà. Vérifiez la présence des règles shorewall nécessaires.""")
+logging.info("""copie du fichier blrules""")
+if os.path.isfile(blrules_file):
     pass
 else:
-    copyfile(blrules_src,blrules_dest)
-    logging.info("""Le fichier blrules a été copié.""")
-    
+    os.system('cp /opt/shorewall-blacklist/configfiles/blrules /etc/shorewall/blrules')
+
 
 logging.info("""Vérification de la configuration shorewall.""")
 result = os.system(shorewall_check)
@@ -222,5 +188,3 @@ if result == 0:
 else:
     logging.critical("""Une erreur est survenue. Arret du processus.""")
     sys.exit()
-
-
