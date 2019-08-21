@@ -128,7 +128,6 @@ with open(ipsum) as ipsum:
 bl_tmp = '/opt/shorewall-blacklist/bl_tmp'
 rm_bltmp = 'rm -f /opt/shorewall-blacklist/bl_tmp'
 create_bltmp ='ipset list blacklist > /opt/shorewall-blacklist/bl_tmp'
-#iplist = open('/opt/shorewall-blacklist/actualbl','w')
 old_list = []
 
 #commands
@@ -164,7 +163,6 @@ f_del.close()
 
 ## injection data dans base
 #command lines et path
-#ipfile_blacklist = open('/opt/shorewall-blacklist/blacklistip','r')
 logging.info("""Injection des regles ipset dans la base""")
 addipset = 'ipset add blacklist '
 delipset = 'ipset del blacklist '
@@ -202,14 +200,18 @@ os.system(ipset_save)
 
 ##redemarrage de shorewall
 #path et command lines
-blrules_file = '/etc/shorewall/blrules'
+blrules_dest = '/etc/shorewall/blrules'
+blrules_src = '/opt/shorewall-blacklist/configfiles/blrules'
+
 #commands
-logging.info("""copie du fichier blrules""")
-if os.path.isfile(blrules_file):
+logging.info("""Vérification de la présence du fichier blrules""")
+if os.path.isfile(blrules_dest):
+    logging.info("""Le fichier blrules existe déjà. Vérifiez la présence des règles shorewall nécessaires.""")
     pass
 else:
-    os.system('cp /opt/shorewall-blacklist/configfiles/blrules /etc/shorewall/blrules')
-
+    copyfile(blrules_src,blrules_dest)
+    logging.info("""Le fichier blrules a été copié.""")
+    
 
 logging.info("""Vérification de la configuration shorewall.""")
 result = os.system(shorewall_check)
