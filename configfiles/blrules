@@ -1,0 +1,2 @@
+#ACTION      SOURCE           DEST     PROTO    DPORT
+DROP         net:+blacklist	all
