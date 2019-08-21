@@ -4,7 +4,7 @@ import os
 import re
 import sys
 import shutil
-import wget
+from urllib.request import urlretrieve
 import ipaddress
 import logging
 from shutil import copyfile
@@ -106,7 +106,7 @@ url_ipsum = 'https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt'
 
 # commands
 logging.info("Recupération des adresses IP BlackListée sur projet ipsum.")
-wget.download(url_ipsum, ipsum_file)
+urlretrieve(url_ipsum, ipsum_file)
 
 # creation du fichier blacklist depuis ipsum.txt
 # command lines et path
