@@ -7,13 +7,13 @@ import shutil
 from urllib.request import urlretrieve
 import ipaddress
 import logging
-from shutil import copyfile
 
 
 # logfile
 logging.basicConfig(filename='/var/log/shorewall-blacklist.log', filemode='w+',
                     format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
+CODE_ERROR = 1
 # command lines
 shorewall_check = 'shorewall check'
 shorewall_restart = 'shorewall restart'
@@ -28,7 +28,7 @@ if result == 0:
 else:
     logging.critical(
         "La configuration initiale de shorewall n'est pas valide. Le processus est arrêté. Veuillez vérifier votre configuration shorewall avant de poursuivre.")
-    sys.exit()
+    sys.exit(CODE_ERROR)
 
 # Test de la présence de la base ipset
 # command lines
@@ -197,4 +197,4 @@ if result == 0:
     logging.info("Shorewall a été correctement redémarré.")
 else:
     logging.critical("Une erreur est survenue. Arret du processus.")
-    sys.exit()
+    sys.exit(CODE_ERROR)
