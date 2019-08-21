@@ -32,7 +32,7 @@ install_ipset = 'apt-get update && apt-get install -y ipset'
 # commands
 result_install = os.system(verif_ipset_install)
 if result_install == 0:
-    logging.info("ipset est deja installe.")
+    logging.info("ipset est deja installé.")
 else:
     logging.info("ipset n'est pas installé. installation en cours ")
     os.system(install_ipset)
@@ -130,6 +130,7 @@ with open(ipsum) as ipsum:
         ipfile_blacklist.write(ip[0]+'\n')
         new_list.append(ip[0])
 
+ipfile_blacklist.close()
 
 # préparation pour diff
 #commands and path
