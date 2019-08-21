@@ -145,11 +145,11 @@ os.system(create_bltmp)
 with open(bl_tmp) as f:
     for line in f.readlines():
         try:
-            ipaddress.ip_address(line.strip('\n'))
+            ipaddress.ip_address(line.strip())
         except ValueError:
             continue
 #        iplist.write(line)
-        old_list.append(line.strip('\n'))
+        old_list.append(line.strip())
 
 os.system(rm_bltmp)
 
