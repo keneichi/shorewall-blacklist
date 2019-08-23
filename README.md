@@ -5,6 +5,8 @@ ajout d'une blacklist d'ip automatiquement
 
 * Si une configuration Shorewall est déjà en place, vérifier que la copie de fichier ne va pas écraser la configuration existante.
 * Ce script n'a pas été testé en Debian 10 Buster en raison du remplacement de iptables par nftables
+* Pour le formatage de ce type : bl_tmp = f'{work_path}/bl_tmp' il est impératif d'être en python 3.6 au minimum.
+
 
 ===Installer les dépendances nécessaires===
 
