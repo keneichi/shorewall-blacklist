@@ -12,11 +12,10 @@ ajout d'une blacklist d'ip automatiquement
 
 apt install python3-pip ipset
 
-pip3 install wget
 
 ### Créer le repertoire pour les scripts
 
-mkdir /etcshorewall/scripts/
+mkdir /etc/shorewall/scripts/
 
 ### Copier les scripts shorewall
 
