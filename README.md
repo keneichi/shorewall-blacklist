@@ -17,6 +17,14 @@ apt install python3-pip ipset
 
 mkdir /etc/shorewall/scripts/
 
+
+### récupérer le script
+
+cd /opt
+
+git clone  https://github.com/keneichi/shorewall-blacklist.git
+
+
 ### Copier les scripts shorewall
 
 cp /opt/shorewall-blacklist/configfiles/started /etc/shorewall/started
@@ -25,11 +33,13 @@ cp /opt/shorewall-blacklist/configfiles/ipset.sh /etc/shorewall/scripts/ipset.sh
 
 chmod +x /etc/shorewall/scripts/ipset.sh
 
+
 ### Crontab
 
 cp /opt/shorewall-blacklist/configfiles/shorewall-blacklist /etc/cron.d/shorewall-blacklist
 
 /etc/init.d/cron restart
+
 
 ### Lancer le script
 
