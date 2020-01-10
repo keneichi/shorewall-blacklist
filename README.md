@@ -10,7 +10,7 @@ ajout d'une blacklist d'ip automatiquement
 
 ### Installer les dépendances nécessaires
 
-apt install python3-pip ipset
+apt install python3-pip ipset ipset-persistent
 
 pip3 install wget
 
