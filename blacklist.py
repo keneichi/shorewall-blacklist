@@ -4,7 +4,7 @@ import os
 import re
 import sys
 import shutil
-from urllib.request import urlretrieve
+import wget
 import ipaddress
 import logging
 
@@ -67,7 +67,7 @@ url_ipsum = 'https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt'
 ipsum_path = '/opt/shorewall-blacklist/'
 # commands
 logging.info("Recupération des adresses IP BlackListée sur projet ipsum.")
-urlretrieve(url_ipsum, ipsum_path)
+wget.download(url_ipsum,ipsum_path)
 
 # creation du fichier blacklist depuis ipsum.txt
 # command lines et path
@@ -167,6 +167,15 @@ list_files = [blacklist, ipsum_file, add_list, del_list]
 for files in list_files:
     os.remove(files)
     logging.info(f'Le fichier de travail "{files}" a été supprimé')
+
+#quick hack pour que IP bureau reste toujours débloquée. A améliorer
+#del_ip_home = os.system('ipset del blacklist YOUR_IP')
+#if del_ip_home == 1:
+#    logging.info("l'adresse IP n'était pas blacklisté. Aucune action à mener.")
+#else:
+#    os.system("ipset del blacklist YOUR_IP ")
+#    logging.info("L'adresse IP YOUR_IP a bien été retiré de la blacklist.")
+
 
 
 # sauvegarde des regles actuelles ipset
