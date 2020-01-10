@@ -11,7 +11,7 @@ ajout d'une blacklist d'ip automatiquement
 ### Installer les dépendances nécessaires
 
 apt install python3-pip ipset
-
+pip3 install wget
 
 ### Créer le repertoire pour les scripts
 
