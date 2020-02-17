@@ -4,12 +4,15 @@ ajout d'une blacklist d'ip automatiquement
 ### ATTENTION
 
 * Si une configuration Shorewall est déjà en place, vérifier que la copie de fichier ne va pas écraser la configuration existante.
-* Pour le formatage de ce type : bl_tmp = f'{work_path}/bl_tmp' il est impératif d'être en python 3.6 au minimum.
+* Penser, dans /etc/shorewall/shorewall.conf, à changer l'option SAVE_IPSETS de No à Yes
+
 ### NOTES 
-* Ce script a été testé en Debian 9 et 10. 
 * Pour Dedian 9 il faut installer Python 3.6
 * Sous Debian 10 pas de comportement étrange constaté suite au remplacement d'iptables par nftables.
-
+* wget a été préféré a urlretrieve (trop de changement de comportement entre deux version de urlretrieve
+* la syntaxe f' a été abandonné la aussi car des changement de comportement on été constaté entre deux versions.
+* Ce script a été testé en Debian 9 et 10 et est fonctionnel en l'état.
+* Pensez à nourir le fichier whitelist de vos adresses IP pour ne pas etre "autoblacklisté"
 
 
 ### Installer les dépendances nécessaires
