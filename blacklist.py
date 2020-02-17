@@ -165,15 +165,16 @@ for files in list_files:
     os.remove(files)
     logging.info('Le fichier de travail'+ files +'a été supprimé')
 
-
 # commands
 white_list_ip = '/opt/shorewall-blacklist/whitelistip'
 
 with open(white_list_ip) as whitelist:
     for line in whitelist:
-        os.system(delipset + line)
-        logging.info("L'adresse IP suivante a été supprimé de la blacklist existante :" + line)
-
+        if '#' in line:
+            continue
+        else:
+             os.system(delipset + line)
+             logging.info("La suppression de l'IP ou du pool d'IP a été forcée :" + line)
 
 # sauvegarde des regles actuelles ipset
 # command lines
