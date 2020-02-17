@@ -4,10 +4,9 @@ import os
 import re
 import sys
 import shutil
-import wget
 import ipaddress
 import logging
-
+import wget
 
 # logfile
 logging.basicConfig(filename='/var/log/shorewall-blacklist.log', filemode='w+',
@@ -64,16 +63,18 @@ else:
 # recupération de la liste des ip via projet stamparm/ipsum
 # paths
 url_ipsum = 'https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt'
-ipsum_path = '/opt/shorewall-blacklist/'
+ipsum_path = '/opt/shorewall-blacklist/ipsum.txt'
+#work_path = '/opt/shorewall-blacklist/'
 # commands
 logging.info("Recupération des adresses IP BlackListée sur projet ipsum.")
+#urlretrieve(url_ipsum, ipsum_path)
 wget.download(url_ipsum,ipsum_path)
 
 # creation du fichier blacklist depuis ipsum.txt
 # command lines et path
 logging.info("Création du fichier blacklist.")
-ipsum = f'{ipsum_path}/ipsum.txt'
-ipfile_blacklist = open(f'{ipsum_path}/blacklistip', 'w')
+ipsum = '/opt/shorewall-blacklist/ipsum.txt'
+ipfile_blacklist = open('/opt/shorewall-blacklist/blacklistip', 'w')
 new_list = []
 
 # commands
@@ -85,8 +86,7 @@ with open(ipsum) as ipsum:
         try:
             ipaddress.ip_address(ip[0])
         except ValueError:
-            logging.warning(
-                f"L'adresse IP {ip[0]} n'est pas valide et n'a pas été ajouté à la blacklist.")
+            logging.warning("L'adresse IP {ip[0]} n'est pas valide et n'a pas été ajouté à la blacklist.")
             continue
         ipfile_blacklist.write(ip[0]+'\n')
         new_list.append(ip[0])
@@ -95,9 +95,9 @@ ipfile_blacklist.close()
 
 # préparation pour diff
 # commands and path
-bl_tmp = f'{ipsum_path}/bl_tmp'
-rm_bltmp = f'rm -f {ipsum_path}/bl_tmp'
-create_bltmp = f'ipset list blacklist > {ipsum_path}/bl_tmp'
+bl_tmp = '/opt/shorewall-blacklist/bl_tmp'
+rm_bltmp = 'rm -f /opt/shorewall-blacklist/bl_tmp'
+create_bltmp = 'ipset list blacklist > /opt/shorewall-blacklist/bl_tmp'
 old_list = []
 
 # commands
@@ -120,12 +120,12 @@ del_list = list(set(old_list) - set(new_list))
 add_list = list(set(new_list) - set(old_list))
 
 # création de la liste d'adresse à ajouter
-f_add = open(f'{ipsum_path}/add_list.txt', 'w')
+f_add = open('/opt/shorewall-blacklist/add_list.txt', 'w')
 f_add.writelines('\n'.join(add_list))
 f_add.close()
 
 # création de la liste d'adresse à supprimer
-f_del = open(f'{ipsum_path}/del_list.txt', 'w')
+f_del = open('/opt/shorewall-blacklist/del_list.txt', 'w')
 f_del.writelines('\n'.join(del_list))
 f_del.close()
 
@@ -134,31 +134,28 @@ f_del.close()
 # command lines et path
 addipset = 'ipset add blacklist '
 delipset = 'ipset del blacklist '
-del_list = f'{ipsum_path}/del_list.txt'
-add_list = f'{ipsum_path}/add_list.txt'
-blacklist = f'{ipsum_path}/blacklistip'
-ipsum_file = f'{ipsum_path}/ipsum.txt'
+del_list = '/opt/shorewall-blacklist/del_list.txt'
+add_list = '/opt/shorewall-blacklist/add_list.txt'
+blacklist = '/opt/shorewall-blacklist/blacklistip'
+ipsum_file = '/opt/shorewall-blacklist/ipsum.txt'
 
 # commands
 logging.info("Injection des regles ipset dans la base")
 if os.path.isfile(ipsetconf):
     with open(del_list) as dellist:
         for line in dellist:
-            os.system(f"{delipset} {line}")
-            logging.info(
-                f"L'adrese IP suivante a été supprimée de la blacklist existante : {line.strip()}")
+            os.system(delipset + line)
+            logging.info("L'adresse IP suivante a été supprimée de la blacklist existante :" + line.strip())
 
     with open(add_list) as addlist:
         for line in addlist:
-            os.system(f"{addipset} {line}")
-            logging.info(
-                f"L'adrese IP suivante a été ajoutée à la blacklist existante : {line.strip()}")
+            os.system(addipset + line)
+            logging.info("L'adresse IP suivante a été ajoutée à la blacklist existante :" + line.strip())
 else:
     with open(blacklist) as blacklist:
         for line in blacklist:
-            os.system(f"{addipset} {line}")
-            logging.info(
-                f"L'adrese IP suivante a été correctement ajoutée à la blacklist : {line.strip()}")
+            os.system(addipset + line)
+            logging.info("L'adresse IP suivante a été correctement ajoutée à la blacklist :" + line.strip())
 
 # nettoyage après opérations
 logging.info("Suppression des fichiers de travail")
@@ -166,16 +163,16 @@ list_files = [blacklist, ipsum_file, add_list, del_list]
 
 for files in list_files:
     os.remove(files)
-    logging.info(f'Le fichier de travail "{files}" a été supprimé')
+    logging.info('Le fichier de travail'+ files +'a été supprimé')
 
-#quick hack pour que IP bureau reste toujours débloquée. A améliorer
-#del_ip_home = os.system('ipset del blacklist YOUR_IP')
-#if del_ip_home == 1:
-#    logging.info("l'adresse IP n'était pas blacklisté. Aucune action à mener.")
-#else:
-#    os.system("ipset del blacklist YOUR_IP ")
-#    logging.info("L'adresse IP YOUR_IP a bien été retiré de la blacklist.")
 
+# commands
+white_list_ip = '/opt/shorewall-blacklist/whitelistip'
+
+with open(white_list_ip) as whitelist:
+    for line in whitelist:
+        os.system(delipset + line)
+        logging.info("L'adresse IP suivante a été supprimé de la blacklist existante :" + line)
 
 
 # sauvegarde des regles actuelles ipset
@@ -193,7 +190,7 @@ blrules_file = '/etc/shorewall/blrules'
 logging.info("copie du fichier blrules")
 if not os.path.isfile(blrules_file):
     os.system(
-        f'cp {ipsum_path}/configfiles/blrules /etc/shorewall/blrules')
+        'cp {work_path}/configfiles/blrules /etc/shorewall/blrules')
 
 
 logging.info("Vérification de la configuration shorewall.")
